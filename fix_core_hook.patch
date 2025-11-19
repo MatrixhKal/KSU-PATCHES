@@ -1,0 +1,30 @@
+diff --git a/kernel/core_hook.c b/kernel/core_hook.c
+index f64e6a15..5883483f 100644
+--- a/kernel/core_hook.c
++++ b/kernel/core_hook.c
+@@ -74,6 +74,7 @@ bool susfs_is_allow_su(void)
+ 	return ksu_is_allow_uid(current_uid().val);
+ }
+ 
++bool susfs_is_boot_completed_triggered = false;
+ extern u32 susfs_zygote_sid;
+ extern bool susfs_is_mnt_devname_ksu(struct path *path);
+ #ifdef CONFIG_KSU_SUSFS_SUS_PATH
+@@ -1496,7 +1497,7 @@ int ksu_handle_setuid(struct cred *new, const struct cred *old)
+ 		//   the detection, really big helps here!
+ 		else if (new_uid.val >= 90000 && new_uid.val < 1000000) {
+ 			task_lock(current);
+-			susfs_set_current_non_root_user_app_proc();
++			susfs_set_current_proc_umounted();
+ #ifdef CONFIG_KSU_SUSFS_SUS_SU
+ 			susfs_set_current_proc_su_not_allowed();
+ #endif // #ifdef CONFIG_KSU_SUSFS_SUS_SU
+@@ -1532,7 +1533,7 @@ int ksu_handle_setuid(struct cred *new, const struct cred *old)
+ #ifdef CONFIG_KSU_SUSFS
+ 	else {
+ 		task_lock(current);
+-		susfs_set_current_non_root_user_app_proc();
++		susfs_set_current_proc_umounted();
+ #ifdef CONFIG_KSU_SUSFS_SUS_SU
+ 		susfs_set_current_proc_su_not_allowed();
+ #endif // #ifdef CONFIG_KSU_SUSFS_SUS_SU
